@@ -55,6 +55,13 @@ LIST_TARGET = 200
 FOUNDING_TARGET = 25
 BREAKEVEN_TARGET = 51
 
+# Do not display density until there is density. "1 of 200" tells a visitor
+# only that nobody is here, which feeds the empty-room risk named in the
+# repository at §10.1 — and it is not more honest than showing nothing, since
+# a page that makes no claim about numbers is making no claim. The bars appear
+# on their own once the list passes this, with no code change needed.
+SHOW_FROM = 10
+
 
 def counts() -> dict:
     f = ROOT / "counts.json"
@@ -73,6 +80,9 @@ def progress_block() -> str:
 
     subs = int(c.get("subscribers", 0))
     mems = int(c.get("members", 0))
+    if subs < SHOW_FROM:
+        return ""   # too early for the number to mean anything
+
     m_target = FOUNDING_TARGET if mems < FOUNDING_TARGET else BREAKEVEN_TARGET
 
     def row(cls, label, value, target, note=""):
