@@ -10,6 +10,7 @@ Outputs: index.html, papers/*.html
 """
 
 import html
+import json
 import re
 from pathlib import Path
 
@@ -37,6 +38,67 @@ OUT = ROOT / "papers"
 # ---------------------------------------------------------------------------
 SIGNUP_ACTION = "https://app.kit.com/forms/9788991/subscriptions"
 SIGNUP_EMAIL = "morgenpeers@outlook.com"   # fallback + fine-print contact
+
+# ---------------------------------------------------------------------------
+# COUNTS  —  written by scripts/fetch_counts.py from the Kit API, on a
+# schedule, via .github/workflows/counts.yml. Not hand-edited.
+#
+# Two targets:
+#   Members    25 while the founding cohort is being built, then 51 — the
+#              number that covers the operating cost (PH-047). Measuring
+#              early progress against the nearer target reads as momentum
+#              rather than shortfall.
+#   List       200. Derived, not decorative: at a plausible 25% list-to-member
+#              conversion, 51 members implies roughly 200 people on the list.
+# ---------------------------------------------------------------------------
+LIST_TARGET = 200
+FOUNDING_TARGET = 25
+BREAKEVEN_TARGET = 51
+
+
+def counts() -> dict:
+    f = ROOT / "counts.json"
+    if not f.exists():
+        return {}
+    try:
+        return json.loads(f.read_text())
+    except ValueError:
+        return {}
+
+
+def progress_block() -> str:
+    c = counts()
+    if not c:
+        return ""   # nothing fetched yet — render nothing rather than zeros
+
+    subs = int(c.get("subscribers", 0))
+    mems = int(c.get("members", 0))
+    m_target = FOUNDING_TARGET if mems < FOUNDING_TARGET else BREAKEVEN_TARGET
+
+    def row(cls, label, value, target, note=""):
+        pct = min(100, round(100 * value / target)) if target else 0
+        note_html = f'\n      <p class="progress-note">{note}</p>' if note else ""
+        return f"""    <div class="progress-row {cls}">
+      <dl class="progress-head">
+        <dt>{label}</dt>
+        <dd>{value} <span>of {target}</span></dd>
+      </dl>
+      <div class="track" role="progressbar" aria-label="{label}"
+           aria-valuenow="{value}" aria-valuemin="0" aria-valuemax="{target}">
+        <i style="width:{pct}%"></i>
+      </div>{note_html}
+    </div>"""
+
+    note = ("51 members covers the operating cost"
+            if m_target == BREAKEVEN_TARGET
+            else "the founding twenty-five, then 51 covers the operating cost")
+    return (
+        '<div class="progress">\n'
+        + row("is-list", "On the list", subs, LIST_TARGET) + "\n"
+        + row("is-members", "Members", mems, m_target, note) + "\n"
+        + "</div>"
+    )
+
 
 INTERESTS = [
     "Build nights",
@@ -299,6 +361,7 @@ INDEX_BODY = """
       <div><dt>Operating cost</dt><dd>$4,500 <span>/mo</span></dd></div>
       <div><dt>Members to cover it</dt><dd>51</dd></div>
     </dl>
+    %(progress)s
     %(signup)s
   </div>
 </section>
@@ -411,7 +474,11 @@ def build_thanks() -> None:
 
 
 def build_index() -> None:
-    body = INDEX_BODY % {"docs": doc_list(), "signup": signup_block()}
+    body = INDEX_BODY % {
+        "docs": doc_list(),
+        "signup": signup_block(),
+        "progress": progress_block(),
+    }
     page = shell(
         "",
         None,

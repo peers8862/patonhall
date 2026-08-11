@@ -215,6 +215,76 @@ h1.title {
 }
 .facts dd span { font-size: 0.9rem; color: var(--ink-2); }
 
+/* ---------- progress ---------- */
+/* Two counts pulled from Kit: everyone on the list, and the ones who have
+   actually joined. The member bar carries the tube colour because it is the
+   number that decides whether the room stays open. */
+
+.progress {
+  border: 1px solid var(--rule);
+  border-top: 0;
+  background: var(--paper);
+}
+
+.progress-row { padding: 0.9rem 1.1rem 1rem; }
+.progress-row + .progress-row { border-top: 1px solid var(--rule-2); }
+
+.progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+}
+
+.progress-head dt {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.progress-head dd {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+.progress-head dd span { color: var(--ink-2); font-size: 0.86rem; }
+
+.track {
+  height: 6px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-2);
+  overflow: hidden;
+}
+.track > i {
+  display: block;
+  height: 100%;
+  background: var(--rule);
+  transition: width 600ms ease-out;
+}
+
+/* the live one */
+.progress-row.is-members .track { border-color: #46596a; background: var(--enamel); }
+.progress-row.is-members .track > i { background: var(--tube); }
+.progress-row.is-members .progress-head dt { color: var(--ink); }
+
+.progress-note {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-2);
+  margin: 0.55rem 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track > i { transition: none; }
+}
+
 /* ---------- signup ---------- */
 /* The one call to action on the page. Enamel ground, tube-white button —
    the only place the strip-light colour appears as a surface. */
