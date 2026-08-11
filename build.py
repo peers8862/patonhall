@@ -55,12 +55,10 @@ LIST_TARGET = 200
 FOUNDING_TARGET = 25
 BREAKEVEN_TARGET = 51
 
-# Do not display density until there is density. "1 of 200" tells a visitor
-# only that nobody is here, which feeds the empty-room risk named in the
-# repository at §10.1 — and it is not more honest than showing nothing, since
-# a page that makes no claim about numbers is making no claim. The bars appear
-# on their own once the list passes this, with no code change needed.
-SHOW_FROM = 10
+# Minimum subscribers before the bars render. Set to 0: the counts show from
+# the first signup, whatever they say. Raise it if an early number ever reads
+# as emptiness rather than as a starting line.
+SHOW_FROM = 0
 
 
 def counts() -> dict:
@@ -87,6 +85,11 @@ def progress_block() -> str:
 
     def row(cls, label, value, target, note=""):
         pct = min(100, round(100 * value / target)) if target else 0
+        # A count of 1 against 200 rounds to 0, and a zero-width fill reads as
+        # a broken element rather than a small number. Anything above zero
+        # gets a visible sliver.
+        if value > 0:
+            pct = max(pct, 2)
         note_html = f'\n      <p class="progress-note">{note}</p>' if note else ""
         return f"""    <div class="progress-row {cls}">
       <dl class="progress-head">
