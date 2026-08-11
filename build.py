@@ -285,7 +285,7 @@ INDEX_BODY = """
     <h1 class="title">Paton&nbsp;Hall</h1>
     <p class="address">Breadalbane Street &middot; Hamilton, Ontario</p>
     <p class="standfirst">A hundred-year-old garage, run as an open room for
-      the people rebuilding North American industry. Accelerate.</p>
+      the people rebuilding North American industry. Accelerate!</p>
     <div class="prose">
       <p>A mechanics shop from about 1927 until now, and we are keeping it that
       way. Concrete floor, garage height, a bay door you can drive through.
