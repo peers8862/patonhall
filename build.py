@@ -250,6 +250,43 @@ MD = markdown.Markdown(
 )
 
 
+# Runs before first paint so a chosen theme does not flash the other one.
+THEME_HEAD = (
+    "<script>(function(){try{var t=localStorage.getItem('ph-theme');"
+    "if(t==='dark'||t==='light')"
+    "document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>"
+)
+
+# The button ships hidden and this unhides it, so it never appears to a reader
+# without JavaScript who could not use it anyway.
+THEME_SCRIPT = """<script>
+(function () {
+  var btn = document.querySelector('.theme-toggle');
+  if (!btn) return;
+  var root = document.documentElement;
+  function current() {
+    var set = root.getAttribute('data-theme');
+    if (set === 'dark' || set === 'light') return set;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function paint() {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    btn.textContent = next;
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' theme');
+    btn.setAttribute('title', 'Switch to ' + next + ' theme');
+  }
+  btn.hidden = false;
+  paint();
+  btn.addEventListener('click', function () {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('ph-theme', next); } catch (e) {}
+    paint();
+  });
+})();
+</script>"""
+
+
 def nav(prefix: str, current: str | None) -> str:
     items = []
     for d in DOCS:
@@ -275,11 +312,13 @@ def shell(prefix: str, current: str | None, title: str, desc: str, body: str) ->
 <meta name="description" content="{html.escape(desc)}">
 <link rel="stylesheet" href="{prefix}styles.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><rect width=%2216%22 height=%2216%22 fill=%22%2316212c%22/><text y=%2212%22 x=%228%22 text-anchor=%22middle%22 font-size=%2211%22 font-family=%22Georgia,serif%22 fill=%22%23f8efd6%22>P</text></svg>">
+{THEME_HEAD}
 </head>
 <body>
 <header class="site-header">
   <div class="header-bar">
     <a class="sign" href="{prefix}index.html">Paton Hall</a>
+    <button class="theme-toggle" type="button" hidden>dark</button>
   </div>
   {nav(prefix, current)}
 </header>
@@ -300,6 +339,7 @@ def shell(prefix: str, current: str | None, title: str, desc: str, body: str) ->
     claims we have withdrawn.</p>
   </div>
 </footer>
+{THEME_SCRIPT}
 </body>
 </html>
 """

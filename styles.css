@@ -23,6 +23,10 @@
   --wide: 60rem;
 }
 
+/* Three states. The system preference applies unless the reader has chosen,
+   and an explicit choice wins in both directions. The two dark blocks below
+   are identical and must stay in sync — plain CSS has no way to share them. */
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper:    #14181c;
@@ -37,6 +41,20 @@
     --rust:     #c0714c;
     --link:     #9dc2dd;
   }
+}
+
+:root[data-theme="dark"] {
+  --paper:    #14181c;
+  --paper-2:  #1c2228;
+  --enamel:   #0d141a;
+  --enamel-2: #1c2a35;
+  --ink:      #e4e2db;
+  --ink-2:    #9aa1a8;
+  --rule:     #333c44;
+  --rule-2:   #262e35;
+  --tube:     #f8efd6;
+  --rust:     #c0714c;
+  --link:     #9dc2dd;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -77,7 +95,30 @@ a:hover { text-decoration-thickness: 2px; }
   max-width: var(--wide);
   margin: 0 auto;
   padding: 0.85rem 1.25rem 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
+
+/* Hidden until the script unhides it, so it never appears without working. */
+.theme-toggle {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 0.42rem 0.7rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.theme-toggle:hover { color: var(--ink); border-color: var(--ink-2); }
+.theme-toggle:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.theme-toggle[hidden] { display: none; }
 
 /* the enamel sign, as it appears on the wall */
 .sign {
