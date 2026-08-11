@@ -325,17 +325,34 @@ h1.title {
   margin-bottom: 0.3rem;
 }
 
+/* These fields sit on the enamel block, which is dark in BOTH themes, so the
+   field ground is always light. The text colour must therefore be a fixed
+   dark value — using var(--ink) made it flip to light in dark mode and left
+   people typing light grey on off-white. */
 .signup-form input,
 .signup-form select {
   width: 100%;
   font-family: var(--sans);
-  font-size: 0.97rem;
-  color: var(--ink);
-  background: #f2f0ea;
-  border: 1px solid #46596a;
+  font-size: 1rem;
+  color: #14171a;
+  caret-color: #14171a;
+  background: #f4f2ec;
+  border: 1px solid #5a6d7e;
   border-radius: 0;
-  padding: 0.6rem 0.7rem;
+  padding: 0.62rem 0.7rem;
   appearance: none;
+}
+.signup-form input::placeholder { color: #5c6469; opacity: 1; }
+.signup-form select option { color: #14171a; background: #f4f2ec; }
+
+/* Browsers repaint autofilled fields with their own colours, which breaks the
+   pairing above. Pin both back. */
+.signup-form input:-webkit-autofill,
+.signup-form input:-webkit-autofill:hover,
+.signup-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #14171a;
+  -webkit-box-shadow: 0 0 0 100px #f4f2ec inset;
+  caret-color: #14171a;
 }
 .signup-form select {
   background-image: linear-gradient(45deg, transparent 50%, #46596a 50%),
