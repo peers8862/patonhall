@@ -215,6 +215,106 @@ h1.title {
 }
 .facts dd span { font-size: 0.9rem; color: var(--ink-2); }
 
+/* ---------- signup ---------- */
+/* The one call to action on the page. Enamel ground, tube-white button —
+   the only place the strip-light colour appears as a surface. */
+
+.signup {
+  background: var(--enamel);
+  color: var(--tube);
+  border: 1px solid var(--enamel);
+  padding: 1.5rem 1.4rem 1.6rem;
+  margin-top: 2.25rem;
+}
+
+.signup .eyebrow { color: #9db2c4; margin-bottom: 0.55rem; }
+
+.signup p {
+  margin: 0 0 1.15rem;
+  max-width: 34rem;
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  line-height: 1.4;
+}
+
+.signup-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  max-width: 40rem;
+}
+.signup-form .full { grid-column: 1 / -1; }
+
+.signup-form label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: #9db2c4;
+  margin-bottom: 0.3rem;
+}
+
+.signup-form input,
+.signup-form select {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 0.97rem;
+  color: var(--ink);
+  background: #f2f0ea;
+  border: 1px solid #46596a;
+  border-radius: 0;
+  padding: 0.6rem 0.7rem;
+  appearance: none;
+}
+.signup-form select {
+  background-image: linear-gradient(45deg, transparent 50%, #46596a 50%),
+                    linear-gradient(135deg, #46596a 50%, transparent 50%);
+  background-position: calc(100% - 18px) 55%, calc(100% - 13px) 55%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2rem;
+}
+.signup-form input:focus-visible,
+.signup-form select:focus-visible {
+  outline: 2px solid var(--tube);
+  outline-offset: 1px;
+}
+
+.signup-form button {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--enamel);
+  background: var(--tube);
+  border: 1px solid var(--tube);
+  border-radius: 0;
+  padding: 0.72rem 1.5rem;
+  cursor: pointer;
+  justify-self: start;
+}
+.signup-form button:hover { background: #fff; border-color: #fff; }
+.signup-form button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.signup .fineprint {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: #8fa3b4;
+  margin: 1rem 0 0;
+  max-width: 34rem;
+}
+.signup .fineprint a { color: #cfe0ee; }
+
+.signup a.plain { color: var(--tube); }
+
+@media (max-width: 34rem) {
+  .signup-form { grid-template-columns: 1fr; }
+  .signup-form button { justify-self: stretch; text-align: center; }
+}
+
 /* ---------- document list ---------- */
 
 .docs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }

@@ -19,6 +19,83 @@ ROOT = Path(__file__).parent
 SRC = ROOT / "docs"
 OUT = ROOT / "papers"
 
+# ---------------------------------------------------------------------------
+# SIGNUP FORM  —  the one thing to configure in this file.
+#
+# Paste your Kit (formerly ConvertKit) form action URL between the quotes.
+# Find it in Kit:  Grow -> Landing Pages & Forms -> your form -> Embed -> HTML.
+# It looks like:   https://app.kit.com/forms/1234567/subscriptions
+#
+# Two things to set up inside Kit first:
+#   1. A custom field with the key  interest   (Subscribers -> custom fields),
+#      so the "what brings you here" answer is stored against each subscriber.
+#   2. A redirect back to this site after signup, so people are not left on a
+#      Kit page  (form Settings -> after signup -> redirect to a URL).
+#
+# Until this is filled in, the page shows a plain email link instead, so the
+# site is never broken and never shows a dead form.
+# ---------------------------------------------------------------------------
+SIGNUP_ACTION = ""
+SIGNUP_EMAIL = "hello@patonhall.ca"   # fallback + fine-print contact
+
+INTERESTS = [
+    "Build nights",
+    "Learning days and talks",
+    "Certified electronics training",
+    "Founding membership",
+    "Just keeping an eye on it",
+]
+
+
+def signup_block() -> str:
+    """The founding-member signup. Falls back to a mail link if unconfigured."""
+    intro = (
+        '<p class="eyebrow">Founding members</p>\n'
+        "<p>The first twenty-five get a founding rate and a say in how the room "
+        "runs. We open within sixty days.</p>\n"
+    )
+
+    if not SIGNUP_ACTION:
+        return (
+            f'<div class="signup">\n{intro}'
+            f'<p style="font-family:var(--sans);font-size:0.97rem">'
+            f'Email <a class="plain" href="mailto:{SIGNUP_EMAIL}'
+            f'?subject=Paton%20Hall%20founding%20member">{SIGNUP_EMAIL}</a> '
+            f"with your name and what brings you here, and we will put you on "
+            f"the list.</p>\n</div>"
+        )
+
+    opts = "\n".join(
+        f'          <option value="{html.escape(i)}">{html.escape(i)}</option>'
+        for i in INTERESTS
+    )
+    return f"""<div class="signup">
+{intro}<form class="signup-form" action="{html.escape(SIGNUP_ACTION)}" method="post">
+      <div>
+        <label for="su-name">Name</label>
+        <input id="su-name" type="text" name="fields[first_name]"
+               autocomplete="given-name" required>
+      </div>
+      <div>
+        <label for="su-email">Email</label>
+        <input id="su-email" type="email" name="email_address"
+               autocomplete="email" required>
+      </div>
+      <div class="full">
+        <label for="su-interest">What brings you here</label>
+        <select id="su-interest" name="fields[interest]">
+{opts}
+        </select>
+      </div>
+      <div class="full">
+        <button type="submit">Put me on the list</button>
+      </div>
+    </form>
+    <p class="fineprint">We will email you about Paton Hall and nothing else.
+    Unsubscribe in one click, any time. No sharing, no selling, no third
+    parties. Questions: <a href="mailto:{SIGNUP_EMAIL}">{SIGNUP_EMAIL}</a>.</p>
+</div>"""
+
 # Ordered. Drives both the nav and the index listing.
 DOCS = [
     {
@@ -222,6 +299,7 @@ INDEX_BODY = """
       <div><dt>Operating cost</dt><dd>$4,500 <span>/mo</span></dd></div>
       <div><dt>Members to cover it</dt><dd>51</dd></div>
     </dl>
+    %(signup)s
   </div>
 </section>
 
@@ -293,7 +371,7 @@ INDEX_BODY = """
 
 
 def build_index() -> None:
-    body = INDEX_BODY % {"docs": doc_list()}
+    body = INDEX_BODY % {"docs": doc_list(), "signup": signup_block()}
     page = shell(
         "",
         None,
