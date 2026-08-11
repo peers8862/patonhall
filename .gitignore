@@ -1,0 +1,12 @@
+# Reference material — mined for language, not for publication
+reference/
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
