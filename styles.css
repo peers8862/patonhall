@@ -341,11 +341,21 @@ h1.title {
 .signup .eyebrow { color: #9db2c4; margin-bottom: 0.55rem; }
 
 .signup p {
-  margin: 0 0 1.15rem;
+  margin: 0 0 0.55rem;
   max-width: 34rem;
   font-family: var(--serif);
   font-size: 1.08rem;
   line-height: 1.4;
+}
+
+/* Supporting line: plainer and quieter than the serif lead above it, so the
+   two read as headline then explanation rather than competing. */
+.signup .signup-sub {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #cfe0ee;
+  margin: 0 0 1.2rem;
 }
 
 .signup-form {
