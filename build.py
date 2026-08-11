@@ -36,7 +36,7 @@ OUT = ROOT / "papers"
 # site is never broken and never shows a dead form.
 # ---------------------------------------------------------------------------
 SIGNUP_ACTION = ""
-SIGNUP_EMAIL = "hello@patonhall.ca"   # fallback + fine-print contact
+SIGNUP_EMAIL = "morgenpeers@outlook.com"   # fallback + fine-print contact
 
 INTERESTS = [
     "Build nights",
