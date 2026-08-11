@@ -32,6 +32,7 @@ jobs:
       - name: Fetch counts from Kit
         env:
           KIT_API_SECRET: ${{ secrets.KIT_API_SECRET }}
+          KIT_API_KEY: ${{ secrets.KIT_API_KEY }}
         run: python3 scripts/fetch_counts.py
 
       - name: Rebuild site

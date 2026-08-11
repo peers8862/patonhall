@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Fetch subscriber and member counts from Kit and write counts.json.
 
-Run by .github/workflows/counts.yml on a schedule. Reads the API key from the
-KIT_API_SECRET environment variable, which comes from a GitHub Actions secret
-and is never stored in this repository.
+Run by .github/workflows/counts.yml on a schedule. Credentials come from
+GitHub Actions secrets and are never stored in this repository:
+
+  KIT_API_SECRET  required — Kit v3 API Secret (the hidden one in Kit)
+  KIT_API_KEY     optional — Kit v3 API Key; v3 needs it to list tags
+
+Either value is also tried against the v4 API, which uses a single key.
 
 Two numbers:
   subscribers — everyone on the list
@@ -20,6 +24,7 @@ Standard library only, so the workflow needs no pip install.
 
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -33,8 +38,17 @@ TIMEOUT = 30
 
 def get(url: str, headers: dict | None = None) -> dict:
     req = urllib.request.Request(url, headers=headers or {})
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        return json.loads(r.read().decode())
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        # Say which call failed and why. A 401 here almost always means the
+        # wrong Kit credential: v3 reads need the API *Secret*, v3 tag listing
+        # needs the API *Key*, and v4 needs a v4 key.
+        safe = re.sub(r"(api_secret|api_key)=[^&]*", r"\1=***", url)
+        raise urllib.error.HTTPError(
+            e.url, e.code, f"{e.reason} on {safe}", e.headers, None
+        ) from None
 
 
 # --- v3 -------------------------------------------------------------------
@@ -49,8 +63,10 @@ def v3_subscribers(key: str) -> int:
     return int(get(f"{V3}/subscribers?{q}")["total_subscribers"])
 
 
-def v3_member_count(key: str) -> int:
-    q = urllib.parse.urlencode({"api_secret": key})
+def v3_member_count(secret: str, api_key: str) -> int:
+    # Kit v3 splits credentials: listing tags wants the API *Key*, while
+    # reading a tag's subscriptions wants the API *Secret*.
+    q = urllib.parse.urlencode({"api_key": api_key or secret})
     tags = get(f"{V3}/tags?{q}").get("tags", [])
     match = next(
         (t for t in tags if str(t.get("name", "")).strip().lower() == MEMBER_TAG),
@@ -59,7 +75,7 @@ def v3_member_count(key: str) -> int:
     if match is None:
         print(f"  note: no tag named '{MEMBER_TAG}' yet — members = 0")
         return 0
-    q = urllib.parse.urlencode({"api_secret": key})
+    q = urllib.parse.urlencode({"api_secret": secret})
     data = get(f"{V3}/tags/{match['id']}/subscriptions?{q}")
     return int(data["total_subscriptions"])
 
@@ -107,18 +123,33 @@ def v4_member_count(key: str) -> int:
 
 
 def main() -> int:
-    key = os.environ.get("KIT_API_SECRET", "").strip()
-    if not key:
-        print("KIT_API_SECRET is empty or unset", file=sys.stderr)
+    # Kit has three credentials and they are not interchangeable:
+    #   KIT_API_SECRET  v3 secret — reads subscriber and tag-subscription data
+    #   KIT_API_KEY     v3 key    — lists tags; safe to expose, used in forms
+    #   either          v4 key    — one credential for everything, newer API
+    secret = os.environ.get("KIT_API_SECRET", "").strip()
+    api_key = os.environ.get("KIT_API_KEY", "").strip()
+
+    if not (secret or api_key):
+        print("Set KIT_API_SECRET (and ideally KIT_API_KEY too)", file=sys.stderr)
         return 2
 
-    for label, subs_fn, mem_fn in (
-        ("v3", v3_subscribers, v3_member_count),
-        ("v4", v4_subscribers, v4_member_count),
-    ):
+    attempts: list[tuple[str, object]] = []
+    if secret:
+        attempts.append(
+            ("v3", lambda: (v3_subscribers(secret),
+                            v3_member_count(secret, api_key)))
+        )
+    for cred, name in ((secret, "secret"), (api_key, "key")):
+        if cred:
+            attempts.append(
+                (f"v4 ({name})",
+                 lambda c=cred: (v4_subscribers(c), v4_member_count(c)))
+            )
+
+    for label, run in attempts:
         try:
-            subscribers = subs_fn(key)
-            members = mem_fn(key)
+            subscribers, members = run()
         except (urllib.error.HTTPError, urllib.error.URLError, KeyError,
                 ValueError, TypeError) as e:
             print(f"  {label} failed: {type(e).__name__}: {e}")
@@ -144,7 +175,10 @@ def main() -> int:
         print(f"  wrote {OUT.name}: {payload}")
         return 0
 
-    print("both v3 and v4 failed — leaving counts.json untouched", file=sys.stderr)
+    print("all credential/API combinations failed — counts.json untouched",
+          file=sys.stderr)
+    print("  In Kit: Settings -> Advanced -> API. The *Secret* is the hidden one.",
+          file=sys.stderr)
     return 1
 
 
