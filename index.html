@@ -44,7 +44,34 @@
     <div class="signup">
 <p class="eyebrow">Founding members</p>
 <p>The first twenty-five get a founding rate and a say in how the room runs. We open within sixty days.</p>
-<p style="font-family:var(--sans);font-size:0.97rem">Email <a class="plain" href="mailto:morgenpeers@outlook.com?subject=Paton%20Hall%20founding%20member">morgenpeers@outlook.com</a> with your name and what brings you here, and we will put you on the list.</p>
+<form class="signup-form" action="https://app.kit.com/forms/9788991/subscriptions" method="post">
+      <div>
+        <label for="su-name">Name</label>
+        <input id="su-name" type="text" name="fields[first_name]"
+               autocomplete="given-name" required>
+      </div>
+      <div>
+        <label for="su-email">Email</label>
+        <input id="su-email" type="email" name="email_address"
+               autocomplete="email" required>
+      </div>
+      <div class="full">
+        <label for="su-interest">What brings you here</label>
+        <select id="su-interest" name="fields[interest]">
+          <option value="Build nights">Build nights</option>
+          <option value="Learning days and talks">Learning days and talks</option>
+          <option value="Certified electronics training">Certified electronics training</option>
+          <option value="Founding membership">Founding membership</option>
+          <option value="Just keeping an eye on it">Just keeping an eye on it</option>
+        </select>
+      </div>
+      <div class="full">
+        <button type="submit">Put me on the list</button>
+      </div>
+    </form>
+    <p class="fineprint">We will email you about Paton Hall and nothing else.
+    Unsubscribe in one click, any time. No sharing, no selling, no third
+    parties. Questions: <a href="mailto:morgenpeers@outlook.com">morgenpeers@outlook.com</a>.</p>
 </div>
   </div>
 </section>

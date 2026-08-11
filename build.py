@@ -35,7 +35,7 @@ OUT = ROOT / "papers"
 # Until this is filled in, the page shows a plain email link instead, so the
 # site is never broken and never shows a dead form.
 # ---------------------------------------------------------------------------
-SIGNUP_ACTION = ""
+SIGNUP_ACTION = "https://app.kit.com/forms/9788991/subscriptions"
 SIGNUP_EMAIL = "morgenpeers@outlook.com"   # fallback + fine-print contact
 
 INTERESTS = [
@@ -370,6 +370,46 @@ INDEX_BODY = """
 """
 
 
+THANKS_BODY = """
+<section class="hero">
+  <figure>
+    <img src="assets/img/room-b.jpg" alt="The interior of the garage looking
+      toward an open bay door with daylight beyond." width="1100" height="1240"
+      style="max-height:44vh;object-position:center 62%%">
+  </figure>
+  <div class="wrap hero-text">
+    <h1 class="title">One&nbsp;more&nbsp;step</h1>
+    <p class="address">Check your email</p>
+    <p class="standfirst">Kit has sent you a confirmation link. Click it and you
+      are on the list.</p>
+    <div class="prose">
+      <p>Nothing happens until you confirm &mdash; that is how we keep the list
+      clean and stay on the right side of Canadian anti-spam rules. If it has not
+      arrived in a few minutes, check your junk folder, or just reply to
+      <a href="mailto:%(email)s">%(email)s</a> and we will add you by hand.</p>
+      <p>In the meantime, the documents are all here:</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+  %(docs)s
+  </div>
+</section>
+"""
+
+
+def build_thanks() -> None:
+    body = THANKS_BODY % {"docs": doc_list(), "email": SIGNUP_EMAIL}
+    page = shell(
+        "", None, "You're on the list",
+        "Confirm your email address to join the Paton Hall list.", body,
+    )
+    (ROOT / "thanks.html").write_text(page, encoding="utf-8")
+    print("  thanks.html")
+
+
 def build_index() -> None:
     body = INDEX_BODY % {"docs": doc_list(), "signup": signup_block()}
     page = shell(
@@ -389,4 +429,5 @@ if __name__ == "__main__":
     print("Building Paton Hall site:")
     build_papers()
     build_index()
+    build_thanks()
     print("Done.")
