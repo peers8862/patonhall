@@ -68,8 +68,10 @@ Paton Hall performs that function, privately funded, at no cost to the public pu
 
 ---
 
-## Contact
+## On request
 
-Available on request, along with proof of insurance, the membership agreement, and our operating hours.
+Certificate of insurance, the membership agreement, operating hours, and the financial model behind the figures above. Ask and we will send them.
+
+Morgen Peers — [morgenpeers@outlook.com](mailto:morgenpeers@outlook.com)
 
 **We are a straightforward tenant in a building with a known future, and we have planned for it.**
