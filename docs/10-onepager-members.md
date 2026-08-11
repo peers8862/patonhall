@@ -64,8 +64,8 @@ The organisers are volunteers to start. If this works, that changes.
 
 ## Founding members
 
-The first twenty-five get a founding rate and a say in how the room runs.
+The first twenty-five members get a founding rate and a say in how the room runs.
 
-We open within sixty days. If you want in before the doors, now is the moment.
+We open within ninety days. If you want in before the doors, now is the moment.
 
 **Come by. Play a game of pool. Bring something you are working on.**

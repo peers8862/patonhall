@@ -126,10 +126,9 @@ def signup_block() -> str:
     """The founding-member signup. Falls back to a mail link if unconfigured."""
     intro = (
         '<p class="eyebrow">Subscribe</p>\n'
-        "<p>The first twenty-five get a founding rate and a say in how the room "
-        "runs. We open within sixty days.</p>\n"
-        '<p class="signup-sub">Receive progress updates and information on '
-        "becoming a member.</p>\n"
+        "<p>Receive progress updates and information on becoming a member.</p>\n"
+        '<p class="signup-sub">The first twenty-five members get a founding rate '
+        "and a say in how the room runs. We open within ninety days.</p>\n"
     )
 
     if not SIGNUP_ACTION:
